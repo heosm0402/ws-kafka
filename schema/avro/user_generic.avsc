@@ -1,0 +1,18 @@
+{
+    "name": "User",
+    "type": "record",
+    "fields": [
+        {
+            "name": "username",
+            "type": "string"
+        },
+        {
+            "name": "birth_year",
+            "type": "long"
+        },
+        {
+            "name": "gender",
+            "type": "int"
+        }
+    ]
+}

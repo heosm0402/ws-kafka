@@ -19,19 +19,14 @@ name_list = ["user1", "user2", "user3", "user4", "user5", "user6"]
 def main(args):
     global name_list
     topic = CONST.TOPIC_NAME
-    if args.specific == "True":
-        schema = "user_specific.avsc"
-    else:
-        schema = "user_generic.avsc"
 
-    with open(f"{CONST.PROJECT_ROOT_DIR}/schema/avro/{schema}") as f:
-        schema_str = f.read()
+    sr_conf = {"url": CONST.SCHEMA_REGISTRY}
+    sr_client = SchemaRegistryClient(sr_conf)
+    schema = sr_client.get_latest_version("avro-test-topic-user-value")
 
-    schema_registry_conf = {"url": CONST.SCHEMA_REGISTRY}
-    schema_registry_client = SchemaRegistryClient(schema_registry_conf)
     avro_serializer = AvroSerializer(
-        schema_registry_client,
-        schema_str,
+        sr_client,
+        schema.schema,
         user_to_dict
     )
 
@@ -57,5 +52,4 @@ def main(args):
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description="AvroSerializer Producer")
-    parser.add_argument("-p", dest="specific", default="True", help="Avro specific record")
     main(parser.parse_args())

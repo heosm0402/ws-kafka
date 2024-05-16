@@ -11,19 +11,14 @@ from model.User import dict_to_user
 
 def main(args):
     topic = CONST.TOPIC_NAME
-    if args.specific == "True":
-        schema = "user_specific.avsc"
-    else:
-        schema = "user_generic.avsc"
 
-    with open(f"{CONST.PROJECT_ROOT_DIR}/schema/avro/{schema}") as f:
-        schema_str = f.read()
+    sr_conf = {"url": CONST.SCHEMA_REGISTRY}
+    sr_client = SchemaRegistryClient(sr_conf)
+    schema = sr_client.get_latest_version("avro-test-topic-user-value")
 
-    schema_registry_conf = {"url": CONST.SCHEMA_REGISTRY}
-    schema_registry_client = SchemaRegistryClient(schema_registry_conf)
     avro_deserializer = AvroDeserializer(
-        schema_registry_client,
-        schema_str,
+        sr_client,
+        schema.schema,
         dict_to_user
     )
 
@@ -58,6 +53,5 @@ def main(args):
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description="AvroSerializer Consumer")
-    parser.add_argument("-p", dest="specific", default="True", help="Avro specific record")
     parser.add_argument("-g", dest="group", default="default_group", help="Consumer group")
     main(parser.parse_args())

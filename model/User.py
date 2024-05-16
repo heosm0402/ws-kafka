@@ -6,9 +6,20 @@ class User(object):
         self.gender = gender
 
 
-def to_dict(user, ctx):
+def user_to_dict(user, ctx):
     return dict(
         username=user.username,
         birth_year=user.birth_year,
         gender=user.gender
+    )
+
+
+def dict_to_user(obj, ctx):
+    if obj is None:
+        return None
+
+    return User(
+        obj["username"],
+        obj["birth_year"],
+        obj["gender"]
     )

@@ -8,7 +8,7 @@ from confluent_kafka.schema_registry import SchemaRegistryClient
 from confluent_kafka.schema_registry.avro import AvroSerializer
 from confluent_kafka.serialization import StringSerializer, SerializationContext, MessageField
 
-from model.User import User, to_dict
+from model.User import User, user_to_dict
 import CONST
 import utils
 
@@ -24,7 +24,6 @@ def main(args):
     else:
         schema = "user_generic.avsc"
 
-    path = os.path.realpath(os.path.dirname(__file__))
     with open(f"{CONST.PROJECT_ROOT_DIR}/schema/avro/{schema}") as f:
         schema_str = f.read()
 
@@ -33,7 +32,7 @@ def main(args):
     avro_serializer = AvroSerializer(
         schema_registry_client,
         schema_str,
-        to_dict
+        user_to_dict
     )
 
     string_serializer = StringSerializer("UTF-8")
@@ -41,7 +40,6 @@ def main(args):
     producer = Producer(conf)
 
     while 1:
-        producer.poll(1.0)
         user = User(
             username=name_list[random.randint(0, len(name_list) - 1)],
             birth_year=random.randint(1994, 2010),
